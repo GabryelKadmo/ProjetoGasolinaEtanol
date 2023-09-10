@@ -1,35 +1,91 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, FormEvent } from 'react'
+import LogoImg from './assets/logo.png'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+// Calculo:  alcool / gasolina
+// Se o resultador for menor que 0.7 compensa usar alcool
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface InfoProps {
+    title: string;
+    gasolina: string | number;
+    alcool: string | number;
+}
+
+function App() {
+    const [gasolinaInput, setGasolinaInput] = useState(5.83)
+    const [alcoolInput, setAlcoolInput] = useState(3.93)
+    const [info, setInfo] = useState();
+
+    function calcular(event: FormEvent) {
+        event.preventDefault();
+
+        let calculo = (alcoolInput / gasolinaInput)
+
+        if (calculo <= 0.7) {
+            setInfo({
+                title: 'Compensa usar álcool!',
+                gasolina: gasolinaInput,
+                alcool: alcoolInput
+            })
+        } else {
+            setInfo({
+                title: 'Compensa usar gasolina!',
+                gasolina: gasolinaInput,
+                alcool: alcoolInput
+            })
+        }
+    }
+
+    return (
+        <div>
+            <main className='container'>
+
+                <img
+                    src={LogoImg}
+                    alt='LogoCalc'
+                />
+                <h1 className='title'>Qual a melhor opção?</h1>
+
+                <form className='form' onSubmit={calcular}>
+                    <label>Gasolina (preço por litro):</label>
+                    <input
+                        className='input'
+                        type='number'
+                        placeholder='5,87'
+                        min='1'
+                        step='0.01'
+                        required
+                        value={gasolinaInput}
+                        onChange={(e) => setGasolinaInput(Number(e.target.value))}
+                    />
+
+                    <label>Álcool (preço por litro):</label>
+                    <input
+                        className='input'
+                        type='number'
+                        placeholder='3,93'
+                        min='1'
+                        step='0.01'
+                        required
+                        value={alcoolInput}
+                        onChange={(e) => setAlcoolInput(Number(e.target.value))}
+                    />
+
+                    <input className="button" type='submit' value="Calcular" />
+
+                </form>
+
+                {info && Object.keys(info).length > 0 && (
+                    <section className='result'>
+                        <h2 className='result-title'>{info.title}</h2>
+                        <span>Álcool R${info.alcool}</span>
+                        <span>Gasolina R${info.gasolina}</span>
+                    </section>
+                )}
+
+            </main>
+        </div>
+    )
 }
 
 export default App
